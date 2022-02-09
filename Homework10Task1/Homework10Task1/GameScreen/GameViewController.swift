@@ -11,68 +11,58 @@ class GameViewController: UIViewController {
     
     private var label: UILabel!
 
-    // MARK: -ViewControllerLifeCycle
+    // MARK: - ViewControllerLifeCycle
     // MARK: -
     
-    override func loadView() {
-        let customView = UIView(frame: UIScreen.main.bounds)
-
-        label = UILabel()
-        label.text = "Tap Me"
-        label.layer.cornerRadius = 50
-        customView.addSubview(label)
-        
-        view = customView
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Game"
-        view.backgroundColor = .systemGreen
-        
-        let tapGestureReconizer = UITapGestureRecognizer(target: self, action: #selector(onTap))
-        view.addGestureRecognizer(tapGestureReconizer)
-        
-        let tapGestureReconizerWithFrame = UITapGestureRecognizer(target: self, action: #selector(onPanFrame))
-        label.addGestureRecognizer(tapGestureReconizerWithFrame)
 
-        // Do any additional setup after loading the view.
+        createLabel()
+        createGesture()
     }
-
     
-    // MARK: -GestureRecognizer
+    // MARK: - GestureRecognizer
     // MARK: -
-
+    
     @IBAction func onTap(gesture: UITapGestureRecognizer) {
-        label.frame.origin = gesture.location(in: view)
-        label.frame.size = CGSize(width: 100, height: 100)
+        label.text = "Tap Me"
+        let locationLabel = gesture.location(in: view)
+        let locationX = locationLabel.x - 50
+        let locationY = locationLabel.y - 50
+        label.frame = CGRect(x: locationX, y: locationY, width: 100, height: 100)
+        label.layer.cornerRadius = 50
+        label.clipsToBounds = true
         label.backgroundColor = getRandomColor()
-        
+        label.isUserInteractionEnabled = true
     }
-
     
-    // MARK: -Private Metods
+    @objc func onTapFrame(gesture: UITapGestureRecognizer) {
+        print("remove")
+        label.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+    }
+    
+    // MARK: - Private Metods
     // MARK: -
 
-    @objc func onPanFrame(gesture: UIPanGestureRecognizer) {
-        //label.removeFromSuperview()
-    }
-    
-    func getRandomColor() -> UIColor {
+    private func getRandomColor() -> UIColor {
          let red:CGFloat = .random(in: 0...1)
          let green:CGFloat = .random(in: 0...1)
          let blue:CGFloat = .random(in: 0...1)
 
          return UIColor(red:red, green: green, blue: blue, alpha: 1.0)
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    private func createGesture() {
+        let tapGestureReconizer = UITapGestureRecognizer(target: self, action: #selector(onTap))
+        view.addGestureRecognizer(tapGestureReconizer)
+        
+        let tapGestureReconizerWithFrame = UITapGestureRecognizer(target: self, action: #selector(onTapFrame))
+        label.addGestureRecognizer(tapGestureReconizerWithFrame)
     }
-    */
-
+    
+    private func createLabel() {
+        label = UILabel()
+        view.addSubview(label)
+    }
 }
